@@ -14,6 +14,7 @@ if url_check_regex_app != []:
     url = url
 if url_check_regex != []:
     url = url
+res = ""
 if url_check_regex_app == [] and url_check_regex == []:
     print("Invalid url")
     res = "inv"
