@@ -1,8 +1,8 @@
 import re
 from bs4 import BeautifulSoup
-import requests
 from webbot import Browser
-import urllib
+import wget
+
 # input url
 
 url = input("Send Radia Javan link : ")
@@ -26,9 +26,10 @@ if res != "inv":
     web.close_current_tab()
     soup = BeautifulSoup(s, 'html.parser')
     # finde mp3 link
-    mp3_name = str(re.findall(r"RJ\.currentMP3Perm\ =\ '(.*)';", str(soup)))
+    mp3_name = str(re.findall(r"RJ\.currentMP3Perm\ =\ \'(.*)\'\;", str(soup)))
     mp3_name = mp3_name.replace("['", "")
     mp3_name = mp3_name.replace("']", "")
     mp3_url = f"https://host2.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
 
-urllib.request.urlretrieve(mp3_url, f"{mp3_name}.mp3")
+
+wget.download(mp3_url, f'{mp3_name}.mp3')
