@@ -25,60 +25,42 @@ def start_handler(update: Update, context:CallbackContext):
     context.bot.send_chat_action(chat_id, ChatAction.TYPING)
     context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption='سلام {first_name} {last_name} \n\nلینک آهنگ را از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
 
-def main():
-    updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
 
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+#input url
+def input_url(update: Update, context:CallbackContext):
+    chat_id = update.message.chat_id
+    # input url
 
-    # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("start", start_handler))
-    # Start the Bot
-    updater.start_polling()
+    url = update.message.link
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    # --------------------
+    # check url
+    url_check_regex = re.findall(r"(www\.radiojavan\.com/mp3s/mp3/)", url)
+    url_check_regex_app = re.findall(r"(rj\.app/m/)", url)
+    if url_check_regex_app != []:
+        url = url
+    if url_check_regex != []:
+        url = url
+    res = ""
+    if url_check_regex_app == [] and url_check_regex == []:
+        print("Invalid url")
+        res = "inv"
+    # try to download
+    if res != "inv":
+        web = Browser()
+        web.go_to(url)
+        s = web.get_page_source()
+        web.close_current_tab()
+        soup = BeautifulSoup(s, 'html.parser')
+        # finde mp3 link
+        mp3_name = str(re.findall(r"RJ\.currentMP3Perm\ =\ \'(.*)\'\;", str(soup)))
+        mp3_name = mp3_name.replace("['", "")
+        mp3_name = mp3_name.replace("']", "")
+        mp3_url = f"https://host2.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
 
+    wget.download(mp3_url, f'{mp3_name}.mp3')
 
-if __name__ == '__main__':
-    main()
-
-
-# input url
-
-url = input("Send Radia Javan link : ")
-
-
-
-#--------------------
-#check url
-url_check_regex = re.findall(r"(www\.radiojavan\.com/mp3s/mp3/)",url)
-url_check_regex_app = re.findall(r"(rj\.app/m/)",url)
-if url_check_regex_app != []:
-    url = url
-if url_check_regex != []:
-    url = url
-res = ""
-if url_check_regex_app == [] and url_check_regex == []:
-    print("Invalid url")
-    res = "inv"
-#try to download
-if res != "inv":
-    web = Browser()
-    web.go_to(url)
-    s = web.get_page_source()
-    web.close_current_tab()
-    soup = BeautifulSoup(s, 'html.parser')
-    # finde mp3 link
-    mp3_name = str(re.findall(r"RJ\.currentMP3Perm\ =\ \'(.*)\'\;", str(soup)))
-    mp3_name = mp3_name.replace("['", "")
-    mp3_name = mp3_name.replace("']", "")
-    mp3_url = f"https://host2.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
-
-
-wget.download(mp3_url, f'{mp3_name}.mp3')
+    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
 
 def main():
     updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
@@ -88,6 +70,8 @@ def main():
 
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start_handler))
+    #Download music
+    dispatcher.add_handler(MessageHandler(Filters.text, input_url))
     # Start the Bot
     updater.start_polling()
 
