@@ -20,9 +20,8 @@ logger = logging.getLogger(__name__)
 #start bot command
 def start_handler(update: Update, context:CallbackContext):
     chat_id = update.message.chat_id
-    with open("./radiojavan.png") as start_messege_photo:
-        context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-        context.bot.sendPhoto(chat_id, start_messege_photo, caption='سلام\n لینک صفحه آهنگ از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
+    context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+    context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption='سلام\n لینک صفحه آهنگ از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
 
 def main():
     updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
