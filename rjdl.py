@@ -2,11 +2,56 @@ import re
 from bs4 import BeautifulSoup
 from webbot import Browser
 import wget
+#telegram-bot libraries
+import logging
+from telegram import Update
+from telegram.chataction import ChatAction
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
+
+
+#bot commands
+#start bot command
+def start_handler(update: Update, context:CallbackContext):
+    chat_id = update.message.chat_id
+    with open("./radiojavan.png") as start_messege_photo:
+        context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+        context.bot.sendPhoto(chat_id, start_messege_photo, caption='سلام\n لینک صفحه آهنگ از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
+
+def main():
+    updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
+
+    # Get the dispatcher to register handlers
+    dispatcher = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dispatcher.add_handler(CommandHandler("start", start_handler))
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
+
 
 # input url
 
 url = input("Send Radia Javan link : ")
 
+
+
+#--------------------
 #check url
 url_check_regex = re.findall(r"(www\.radiojavan\.com/mp3s/mp3/)",url)
 url_check_regex_app = re.findall(r"(rj\.app/m/)",url)
@@ -33,3 +78,24 @@ if res != "inv":
 
 
 wget.download(mp3_url, f'{mp3_name}.mp3')
+
+def main():
+    updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
+
+    # Get the dispatcher to register handlers
+    dispatcher = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dispatcher.add_handler(CommandHandler("start", start_handler))
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+
+
+if __name__ == '__main__':
+    main()
+
