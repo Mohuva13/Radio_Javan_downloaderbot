@@ -20,10 +20,14 @@ logger = logging.getLogger(__name__)
 #start bot command
 def start_handler(update: Update, context:CallbackContext):
     chat_id = update.message.chat_id
-    first_name = update.message.from_user.first_name
-    last_name = update.message.from_user.last_name
+    first_name = update.message.chat.first_name
+    last_name = update.message.chat.last_name
+    if first_name == None :
+        first_name = " "
+    if last_name == None :
+        last_name = " "
     context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-    context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption='سلام {first_name} {last_name} \n\nلینک آهنگ را از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
+    context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption=f'سلام {first_name} {last_name} \n\nلینک آهنگ را از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
 
 
 #input url
