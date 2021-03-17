@@ -48,7 +48,7 @@ def input_url(update: Update, context:CallbackContext):
     res = ""
     if url_check_regex_app == [] and url_check_regex == []:
         context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-        context.bot.send_message(chat_id=chat_id, caption="لینک اشتباه است لطفا لینک آهنگ مورد نظر را از رادیو جوان بفرستید.")
+        context.bot.send_message(chat_id=chat_id, text="لینک اشتباه است لطفا لینک آهنگ مورد نظر را از رادیو جوان بفرستید.")
         res = "inv"
     # try to download
     if res != "inv":
@@ -66,7 +66,7 @@ def input_url(update: Update, context:CallbackContext):
     wget.download(mp3_url, f'{mp3_name}.mp3')
 
     context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
-    context.bot.send_audio(chat_id=chat_id, audio=f"./{mp3_name}.mp3", caption=f"{mp3_name}")
+    context.bot.send_audio(chat_id=chat_id, audio=open(f"./{mp3_name}.mp3", "rb"), caption=f"{mp3_name}")
 def main():
     updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
 
