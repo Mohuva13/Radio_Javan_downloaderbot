@@ -2,6 +2,7 @@ import re
 from bs4 import BeautifulSoup
 from webbot import Browser
 import wget
+import os
 #telegram-bot libraries
 import logging
 from telegram import Update
@@ -70,6 +71,10 @@ def input_url(update: Update, context:CallbackContext):
     audio_caption = str(mp3_name) #name fixed
     audio_caption = audio_caption.replace("-"," ")
     context.bot.send_audio(chat_id=chat_id, audio=open(f"./{mp3_name}.mp3", "rb"), caption=f"{audio_caption}")
+    if os.path.exists(f"{mp3_name}.mp3"):
+        os.remove(f"{mp3_name}.mp3")
+
+
 def main():
     updater = Updater("1673620291:AAFTg-Dzs6857hA8e1ymHkvk_1vf_HFlvDg")
 
