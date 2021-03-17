@@ -35,7 +35,7 @@ def input_url(update: Update, context:CallbackContext):
     chat_id = update.message.chat_id
     # input url
 
-    url = update.message.link
+    url = update.message.text
 
     # --------------------
     # check url
