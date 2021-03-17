@@ -63,10 +63,11 @@ def input_url(update: Update, context:CallbackContext):
         mp3_name = mp3_name.replace("']", "")
         mp3_url = f"https://host2.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
 
+    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
     wget.download(mp3_url, f'{mp3_name}.mp3')
 
-    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
-    audio_caption = str(mp3_namep)
+
+    audio_caption = str(mp3_name) #name fixed
     audio_caption = audio_caption.replace("-"," ")
     context.bot.send_audio(chat_id=chat_id, audio=open(f"./{mp3_name}.mp3", "rb"), caption=f"{audio_caption}")
 def main():
