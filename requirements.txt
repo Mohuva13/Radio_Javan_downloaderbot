@@ -11,6 +11,7 @@ lxml==4.5.0
 python-telegram-bot==13.4.1
 pytz==2021.1
 PyVirtualDisplay==0.2.4
+requests==2.25.1
 selenium==3.141.0
 six==1.15.0
 soupsieve==2.2
