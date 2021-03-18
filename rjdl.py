@@ -29,62 +29,145 @@ def start_handler(update: Update, context:CallbackContext):
     if last_name == None :
         last_name = " "
     context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-    context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption=f'سلام {first_name} {last_name} \n\nلینک آهنگ را از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
+    context.bot.send_photo(chat_id=chat_id, photo=open('./radiojavan.png', 'rb'), caption=f'سلام {first_name} {last_name} \n\nلینک آهنگ یا موزیک ویدیو را از اپلیکیشن یا وب سایت رادیو جوان بفرستید.')
 
 
 #input url
 def input_url(update: Update, context:CallbackContext):
-    chat_id = update.message.chat_id
-    # input url
+    while True:
+        chat_id = update.message.chat_id
+        # input url
 
-    url = update.message.text
+        url = update.message.text
 
-    # --------------------
-    # check url
-    url_check_regex = re.findall(r"(www\.radiojavan\.com/mp3s/mp3/)", url)
-    url_check_regex_app = re.findall(r"(rj\.app/m/)", url)
-    if url_check_regex_app != []:
-        url = url
-    if url_check_regex != []:
-        url = url
-    res = ""
-    if url_check_regex_app == [] and url_check_regex == []:
-        context.bot.send_chat_action(chat_id, ChatAction.TYPING)
-        context.bot.send_message(chat_id=chat_id, text="لینک اشتباه است لطفا لینک آهنگ مورد نظر را از رادیو جوان بفرستید.")
-        res = "inv"
-    # try to download
-    if res != "inv":
-        web = Browser()
-        web.go_to(url)
-        s = web.get_page_source()
-        web.close_current_tab()
-        soup = BeautifulSoup(s, 'html.parser')
-        # finde mp3 link
-        mp3_name = str(re.findall(r"RJ\.currentMP3Perm\ =\ \'(.*)\'\;", str(soup)))
-        mp3_name = mp3_name.replace("['", "")
-        mp3_name = mp3_name.replace("']", "")
-        mp3_url = f"https://host2.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
+        # --------------------
+        # check url
+        url_check_regex = re.findall(r"(www\.radiojavan\.com/mp3s/mp3/)", url)
+        url_check_regex_app = re.findall(r"(rj\.app/m/)", url)
+        url_check_regex_podcast_app = re.findall(r"rj\.app/p/", url)
+        url_check_regex_podcast = re.findall(r"www\.radiojavan\.com/podcasts/podcast/", url)
+        url_check_regex_video = re.findall(r"www\.radiojavan\.com/videos/video/", url)
+        url_check_regex_video_app = re.findall(r"rj\.app/v/", url)
+        list_url = [
+            url_check_regex,
+            url_check_regex_app,
+            url_check_regex_podcast,
+            url_check_regex_podcast_app,
+            url_check_regex_video,
+            url_check_regex_video_app
+        ]
+        what_is_link_type = ""
+        count = 0
+        for check_url_link_list in list_url:
+            if str(check_url_link_list) != "[]" :
+                url = url
+                what_is_link_type = check_url_link_list
+            else:
+                count += 1
+        res = ""
 
-    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
 
-    req = urllib.request.Request(mp3_url)
-    with urllib.request.urlopen(req) as response:
-        the_mp3_url_page = str(response.read())
-    if the_mp3_url_page != "b'Not found'":
-        wget.download(mp3_url, f'{mp3_name}.mp3')
-    else:
-        try:
-            os.remove(f"{mp3_name}.mp3")
-        except:
-            pass
-        mp3_url = f"https://host1.rj-mw1.com/media/mp3/mp3-256/{mp3_name}.mp3"
-        wget.download(mp3_url, f'{mp3_name}.mp3')
+        if count == 6:
+            context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+            context.bot.send_message(chat_id=chat_id, text="لینک اشتباه است. \n\n لطفا لینک آهنگ یا موزیک ویدیوی مورد نظر را از رادیو جوان بفرستید.")
+            res = "inv"
+            break
 
-    audio_caption = str(mp3_name) #name fixed
-    audio_caption = audio_caption.replace("-"," ")
-    context.bot.send_audio(chat_id=chat_id, audio=open(f"./{mp3_name}.mp3", "rb"), caption=f"{audio_caption}")
-    if os.path.exists(f"{mp3_name}.mp3"):
-        os.remove(f"{mp3_name}.mp3")
+        # try to download
+        files_url = {
+            "music": "media/mp3/mp3-256/",
+            "podcast": "media/podcast/mp3-192/",
+            "video_lq": "media/music_video/lq/",
+            "video_hd": "media/music_video/hd/",
+            "video_hq": "media/music_video/hq/",
+            "video_4k": "media/music_video/4k/"
+        }
+        regex_music_and_video = {
+            "music": "RJ\.currentMP3Perm\ =\ \'(.*)\'\;",
+            "video": "RJ\.videoPermlink\ =\ \'(.*)\'\;"
+        }
+        def download_file_rj(music_or_video, file_type, regex_file, ch_actions):
+            if res != "inv":
+                web = Browser()
+                web.go_to(url)
+                s = web.get_page_source()
+                web.close_current_tab()
+                soup = BeautifulSoup(s, 'html.parser')
+                # finde mp3 link
+                file_name = str(re.findall(fr"{regex_file}", str(soup)))
+                file_name = file_name.replace("['", "")
+                file_name = file_name.replace("']", "")
+                file_url = f"https://host2.rj-mw1.com/{file_type}{file_name}.mp{music_or_video}"
+                req = urllib.request.Request(file_url)
+                with urllib.request.urlopen(req) as response:
+                    the_file_url_page = str(response.read())
+                if the_file_url_page != "b'Not found'":
+                    wget.download(file_url, f'{file_name}.mp{music_or_video}')
+                else:
+                    try:
+                        os.remove(f"{file_name}.mp{music_or_video}")
+                    except:
+                        pass
+                    file_url = f"https://host1.rj-mw1.com/{file_type}{file_name}.mp{music_or_video}"
+                    wget.download(file_url, f'{file_name}.mp{music_or_video}')
+
+                file_caption = str(file_name) #name fixed
+                file_caption = file_caption.replace("-"," ")
+                context.bot.send_message(chat_id=chat_id, text="کمی صبر کنید...")
+                if ch_actions == "music":
+                    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
+                    context.bot.send_audio(chat_id=chat_id, audio=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
+                elif ch_actions == "video":
+                    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_VIDEO)
+                    context.bot.send_video(chat_id=chat_id, video=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
+
+                if os.path.exists(f"{file_name}.mp{music_or_video}"):
+                    os.remove(f"{file_name}.mp{music_or_video}")
+
+        if what_is_link_type == url_check_regex_podcast:
+            download_file_rj("3",files_url["podcast"],regex_music_and_video["music"], "music")
+        if what_is_link_type == url_check_regex_podcast_app:
+            download_file_rj("3",files_url["podcast"],regex_music_and_video["music"], "music")
+        elif what_is_link_type == url_check_regex:
+            download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
+        elif what_is_link_type == url_check_regex_app:
+            download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
+        if what_is_link_type == url_check_regex_video_app:
+            try:
+                download_file_rj("4", files_url["video_lq"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_hd"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_hq"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_4k"], regex_music_and_video["video"], "video")
+            except:
+                pass
+        if what_is_link_type == url_check_regex_video:
+            try:
+                download_file_rj("4", files_url["video_lq"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_hd"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_hq"], regex_music_and_video["video"], "video")
+            except:
+                pass
+            try:
+                download_file_rj("4", files_url["video_4k"], regex_music_and_video["video"], "video")
+            except:
+                pass
+        context.bot.send_message(chat_id=chat_id, text=":)")
+        break
 
 
 def main():
