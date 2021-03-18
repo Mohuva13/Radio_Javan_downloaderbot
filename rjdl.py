@@ -69,9 +69,8 @@ def input_url(update: Update, context:CallbackContext):
 
     req = urllib.request.Request(mp3_url)
     with urllib.request.urlopen(req) as response:
-        the_mp3_url_page = response.read()
-    soup_mp3 = str(BeautifulSoup(the_mp3_url_page, "html.parser"))
-    if soup_mp3 != "Not found":
+        the_mp3_url_page = str(response.read())
+    if the_mp3_url_page != "b'Not found'":
         wget.download(mp3_url, f'{mp3_name}.mp3')
     else:
         try:
