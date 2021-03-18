@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from webbot import Browser
 import wget
 import os
-import requests
+import urllib.request
 #telegram-bot libraries
 import logging
 from telegram import Update
@@ -67,9 +67,11 @@ def input_url(update: Update, context:CallbackContext):
 
     context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
 
-    mp3_url_check = requests.get(mp3_url)
-    mp3_url_check = str(mp3_url_check)
-    if mp3_url_check != "<Response [200]>":
+    req = urllib.request.Request(mp3_url)
+    with urllib.request.urlopen(req) as response:
+        the_mp3_url_page = response.read()
+    soup_mp3 = str(BeautifulSoup(the_mp3_url_page, "html.parser"))
+    if soup_mp3 != "Not found":
         wget.download(mp3_url, f'{mp3_name}.mp3')
     else:
         try:
