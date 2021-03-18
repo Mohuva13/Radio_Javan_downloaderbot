@@ -125,45 +125,23 @@ def input_url(update: Update, context:CallbackContext):
                     os.remove(f"{file_name}.mp{music_or_video}")
 
         if what_is_link_type == url_check_regex_podcast:
-            download_file_rj("3",files_url["podcast"],regex_music_and_video["music"], "music")
-        if what_is_link_type == url_check_regex_podcast_app:
-            download_file_rj("3",files_url["podcast"],regex_music_and_video["music"], "music")
+            context.bot.send_message(chat_id=chat_id, text="به دلیل محدودیت ارسال فایل های حجم بالا توسط ربات ها از سمت تلگرام ، امکان ارسال پادکست وجود ندارد...")
+        elif what_is_link_type == url_check_regex_podcast_app:
+            context.bot.send_message(chat_id=chat_id, text="به دلیل محدودیت ارسال فایل های حجم بالا توسط ربات ها از سمت تلگرام ، امکان ارسال پادکست وجود ندارد...")
         elif what_is_link_type == url_check_regex:
             download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
         elif what_is_link_type == url_check_regex_app:
             download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
-        if what_is_link_type == url_check_regex_video_app:
+        elif what_is_link_type == url_check_regex_video_app:
             try:
+                context.bot.send_message(chat_id=chat_id, text="متاسفانه به دلیل محدودیت حجم آپلود فایل توسط ربات ها از سمت تلگرام ، موزیک ویدیو فقط با کیفیت 480p LQ برایتان آپلود خواهد شد . \n\n منتظر دریافت موزیک ویدیو باشید...")
                 download_file_rj("4", files_url["video_lq"], regex_music_and_video["video"], "video")
             except:
                 pass
+        elif what_is_link_type == url_check_regex_video:
             try:
-                download_file_rj("4", files_url["video_hd"], regex_music_and_video["video"], "video")
-            except:
-                pass
-            try:
-                download_file_rj("4", files_url["video_hq"], regex_music_and_video["video"], "video")
-            except:
-                pass
-            try:
-                download_file_rj("4", files_url["video_4k"], regex_music_and_video["video"], "video")
-            except:
-                pass
-        if what_is_link_type == url_check_regex_video:
-            try:
+                context.bot.send_message(chat_id=chat_id, text="متاسفانه به دلیل محدودیت حجم آپلود فایل توسط ربات ها از سمت تلگرام ، موزیک ویدیو فقط با کیفیت 480p LQ برایتان آپلود خواهد شد .\n\n منتظر دریافت موزیک ویدیو باشید...")
                 download_file_rj("4", files_url["video_lq"], regex_music_and_video["video"], "video")
-            except:
-                pass
-            try:
-                download_file_rj("4", files_url["video_hd"], regex_music_and_video["video"], "video")
-            except:
-                pass
-            try:
-                download_file_rj("4", files_url["video_hq"], regex_music_and_video["video"], "video")
-            except:
-                pass
-            try:
-                download_file_rj("4", files_url["video_4k"], regex_music_and_video["video"], "video")
             except:
                 pass
         context.bot.send_message(chat_id=chat_id, text=":)")
