@@ -87,6 +87,7 @@ def input_url(update: Update, context:CallbackContext):
             "video": "RJ\.videoPermlink\ =\ \'(.*)\'\;"
         }
         def download_file_rj(music_or_video, file_type, regex_file, ch_actions):
+            context.bot.send_message(chat_id=chat_id, text="کمی صبر کنید...")
             if res != "inv":
                 web = Browser()
                 web.go_to(url)
@@ -110,20 +111,21 @@ def input_url(update: Update, context:CallbackContext):
                         pass
                     file_url = f"https://host1.rj-mw1.com/{file_type}{file_name}.mp{music_or_video}"
                     wget.download(file_url, f'{file_name}.mp{music_or_video}')
-
                 file_caption = str(file_name) #name fixed
                 file_caption = file_caption.replace("-"," ")
-                context.bot.send_message(chat_id=chat_id, text="کمی صبر کنید...")
-                if ch_actions == "music":
-                    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
-                    context.bot.send_audio(chat_id=chat_id, audio=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
-                elif ch_actions == "video":
-                    context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_VIDEO)
-                    context.bot.send_video(chat_id=chat_id, video=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
+                if str(file_name) == "[]":
+                    context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+                    context.bot.send_message(chat_id=chat_id, text="لینک اشتباه است. \n\n لطفا لینک آهنگ یا موزیک ویدیوی مورد نظر را از رادیو جوان بفرستید.")
+                else:
+                    if ch_actions == "music":
+                        context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_AUDIO)
+                        context.bot.send_audio(chat_id=chat_id, audio=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
+                    elif ch_actions == "video":
+                        context.bot.send_chat_action(chat_id, ChatAction.UPLOAD_VIDEO)
+                        context.bot.send_video(chat_id=chat_id, video=open(f"./{file_name}.mp{music_or_video}", "rb"), caption=f"{file_caption}")
 
                 if os.path.exists(f"{file_name}.mp{music_or_video}"):
                     os.remove(f"{file_name}.mp{music_or_video}")
-
         if what_is_link_type == url_check_regex_podcast:
             context.bot.send_message(chat_id=chat_id, text="به دلیل محدودیت ارسال فایل های حجم بالا توسط ربات ها از سمت تلگرام ، امکان ارسال پادکست وجود ندارد...")
         elif what_is_link_type == url_check_regex_podcast_app:
