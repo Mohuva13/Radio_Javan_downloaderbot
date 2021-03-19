@@ -147,6 +147,7 @@ def input_url(update: Update, context:CallbackContext):
             list_artists_playlist = soup_playlist.findAll("span", {"class": "artist"})
             list_songs_playlist = soup_playlist.findAll("span", {"class": "song"})
             playlist_count = 0
+            context.bot.send_message(chat_id=chat_id, text="🔴 توجه 🔴 : \n\n ممکن است برخی آهنگ های موجود در پلی لیست ناقص فرستاده شوند و یا فرستاده نشود و پیام لینک اشتباه است نمایش داده شود . در صورت نیاز بعد از اتمام دانلود پلی لیست و مشاهده پیام :)  لینک آهنگ فرستاده نشده یا خراب را از اپلیکیشن یا وب سایت رادیو جوان ارسال کنید.🌷🌹")
             for artists in list_artists_playlist:
                 re_artists = re.findall(r"(?=>).*(?=<)", str(artists))
                 re_songs = re.findall(r"(?=>).*(?=<)", str(list_songs_playlist[playlist_count]))
@@ -167,6 +168,8 @@ def input_url(update: Update, context:CallbackContext):
             list_artists_playlist = soup_playlist.findAll("span", {"class": "artist"})
             list_songs_playlist = soup_playlist.findAll("span", {"class": "song"})
             playlist_count = 0
+            context.bot.send_message(chat_id=chat_id,
+                                     text="🔴 توجه 🔴 : \n\n ممکن است برخی آهنگ های موجود در پلی لیست ناقص فرستاده شوند و یا فرستاده نشود و پیام لینک اشتباه است نمایش داده شود . در صورت نیاز بعد از اتمام دانلود پلی لیست و مشاهده پیام :)  لینک آهنگ فرستاده نشده یا خراب را از اپلیکیشن یا وب سایت رادیو جوان ارسال کنید.🌷🌹")
             for artists in list_artists_playlist:
                 re_artists = re.findall(r"(?=>).*(?=<)", str(artists))
                 re_songs = re.findall(r"(?=>).*(?=<)", str(list_songs_playlist[playlist_count]))
