@@ -48,13 +48,17 @@ def input_url(update: Update, context:CallbackContext):
         url_check_regex_podcast = re.findall(r"www\.radiojavan\.com/podcasts/podcast/", url)
         url_check_regex_video = re.findall(r"www\.radiojavan\.com/videos/video/", url)
         url_check_regex_video_app = re.findall(r"rj\.app/v/", url)
+        url_check_regex_playlist = re.findall(r"www\.radiojavan\.com/playlists/playlist/", url)
+        url_check_regex_playlist_app = re.findall(r"rj\.app/pm/", url)
         list_url = [
             url_check_regex,
             url_check_regex_app,
             url_check_regex_podcast,
             url_check_regex_podcast_app,
             url_check_regex_video,
-            url_check_regex_video_app
+            url_check_regex_video_app,
+            url_check_regex_playlist,
+            url_check_regex_playlist_app
         ]
         what_is_link_type = ""
         count = 0
@@ -134,6 +138,45 @@ def input_url(update: Update, context:CallbackContext):
             download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
         elif what_is_link_type == url_check_regex_app:
             download_file_rj("3",files_url["music"],regex_music_and_video["music"], "music")
+        elif what_is_link_type == url_check_regex_playlist:
+            web = Browser()
+            web.go_to(url)
+            play_list_source_page = web.get_page_source()
+            web.close_current_tab()
+            soup_playlist = BeautifulSoup(play_list_source_page, "html.parser")
+            list_artists_playlist = soup_playlist.findAll("span", {"class": "artist"})
+            list_songs_playlist = soup_playlist.findAll("span", {"class": "song"})
+            playlist_count = 0
+            for artists in list_artists_playlist:
+                re_artists = re.findall(r"(?=>).*(?=<)", str(artists))
+                re_songs = re.findall(r"(?=>).*(?=<)", str(list_songs_playlist[playlist_count]))
+                url = f"www.radiojavan.com/mp3s/mp3/{re_artists[0]}-{re_songs[0]}"
+                playlist_count += 1
+                url = url.replace(" ", "-")
+                url = url.replace("['>", "")
+                url = url.replace("']", "")
+                url = url.replace(">", "")
+                download_file_rj("3", files_url["music"], regex_music_and_video["music"], "music")
+
+        elif what_is_link_type == url_check_regex_playlist_app:
+            web = Browser()
+            web.go_to(url)
+            play_list_source_page = web.get_page_source()
+            web.close_current_tab()
+            soup_playlist = BeautifulSoup(play_list_source_page, "html.parser")
+            list_artists_playlist = soup_playlist.findAll("span", {"class": "artist"})
+            list_songs_playlist = soup_playlist.findAll("span", {"class": "song"})
+            playlist_count = 0
+            for artists in list_artists_playlist:
+                re_artists = re.findall(r"(?=>).*(?=<)", str(artists))
+                re_songs = re.findall(r"(?=>).*(?=<)", str(list_songs_playlist[playlist_count]))
+                url = f"www.radiojavan.com/mp3s/mp3/{re_artists[0]}-{re_songs[0]}"
+                playlist_count += 1
+                url = url.replace(" ", "-")
+                url = url.replace("['>", "")
+                url = url.replace("']", "")
+                url = url.replace(">", "")
+                download_file_rj("3", files_url["music"], regex_music_and_video["music"], "music")
         elif what_is_link_type == url_check_regex_video_app:
             try:
                 context.bot.send_message(chat_id=chat_id, text="متاسفانه به دلیل محدودیت حجم آپلود فایل توسط ربات ها از سمت تلگرام ، موزیک ویدیو فقط با کیفیت 480p LQ برایتان آپلود خواهد شد . \n\n منتظر دریافت موزیک ویدیو باشید...")
