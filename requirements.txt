@@ -17,6 +17,6 @@ six==1.15.0
 soupsieve==2.2
 tornado==6.1
 tzlocal==2.1
-urllib3==1.26.3
+urllib3==1.26.4
 webbot==0.34
 wget==3.2
