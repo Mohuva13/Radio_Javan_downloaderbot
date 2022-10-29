@@ -102,7 +102,7 @@ def input_url(update: Update, context:CallbackContext):
                 file_name = str(re.findall(fr"{regex_file}", str(soup)))
                 file_name = file_name.replace("['", "")
                 file_name = file_name.replace("']", "")
-                file_url = f"https://host2.rj-mw1.com/{file_type}{file_name}.mp{music_or_video}"
+                file_url = f"https://host2.rj-mw1.com/media/{file_type}{file_name}.mp{music_or_video}"
                 req = urllib.request.Request(file_url)
                 with urllib.request.urlopen(req) as response:
                     the_file_url_page = str(response.read())
@@ -113,7 +113,7 @@ def input_url(update: Update, context:CallbackContext):
                         os.remove(f"{file_name}.mp{music_or_video}")
                     except:
                         pass
-                    file_url = f"https://host1.rj-mw1.com/{file_type}{file_name}.mp{music_or_video}"
+                    file_url = f"https://host1.rj-mw1.com/media/{file_type}{file_name}.mp{music_or_video}"
                     wget.download(file_url, f'{file_name}.mp{music_or_video}')
                 file_caption = str(file_name) #name fixed
                 file_caption = file_caption.replace("-"," ")
