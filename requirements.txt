@@ -2,7 +2,7 @@ APScheduler==3.6.3
 beautifulsoup4==4.9.3
 browser==0.0.1
 bs4==0.0.1
-certifi==2020.12.5
+certifi==2023.7.22
 chardet==4.0.0
 cssselect==1.0.3
 EasyProcess==0.3
